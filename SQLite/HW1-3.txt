@@ -1,0 +1,39 @@
+CREATE TABLE "books" ( `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+                       `title` TEXT,
+                       `author` TEXT,
+                        `pub_year` INTEGER,
+                        `recording_date` INTEGER,
+                        `price` INTEGER );
+
+CREATE TABLE `publisher` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+                           `name` TEXT,
+                           `country` TEXT,
+                           `city` TEXT,
+                           `recording_date` INTEGER );
+
+INSERT INTO `books` (`id`, `title`, `author`, `pub_year`, `price`) VALUES
+(1, 'Собачье сердце', 'Булгаков М. А.', 1985, 420),
+(2, 'Война и мир', 'Толстой Л. Н.', 1935, 1400),
+(3, 'Мертвые души', 'Гоголь Н. В.', 1992, 200),
+(4, 'Мастер и Маргарита', 'Булгаков М. А.', 1995, 500);
+
+INSERT INTO `publisher` (`id`, `name`, `country`, `city`) VALUES
+(1, 'АСТ', 'Россия', 'Москва'),
+(2, 'Elsevier', 'Нидерланды'),
+(3, 'Karger AG', 'Германия'),
+(4, 'Питер', 'Россия', 'Санкт-Петербург');
+
+
+Создайте запросы, выбирающие:
+
+Все книги определенного автора
+SELECT `id`, `title`, `author`, `pub_year`, `price`, `recording_date` FROM `books` WHERE author = 'Булгаков М. А.';
+
+Все книги ценой не более 500 рублей
+SELECT `id`, `title`, `author`, `pub_year`, `price`, `recording_date` FROM `books` WHERE price < 500;
+
+Заглавия книг (и год издания) определенного автора, отсортированные по году их издания
+SELECT `title`, `pub_year` FROM `books` WHERE author = 'Булгаков М. А.' ORDER BY pub_year;
+
+Имена авторов книг, вышедших в 1990-е годы
+SELECT `author` FROM `books` WHERE pub_year BETWEEN 1990 AND 2000;

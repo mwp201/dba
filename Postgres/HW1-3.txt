@@ -1,0 +1,33 @@
+CREATE TABLE public.books
+(
+  id integer NOT NULL DEFAULT nextval('books_id_seq'::regclass),
+  title text,
+  author text,
+  pub_year integer,
+  price money,
+  recording_date timestamp without time zone
+);
+
+CREATE TABLE public.publisher
+(
+  id integer NOT NULL DEFAULT nextval('publisher_id_seq'::regclass),
+  name text,
+  country text,
+  city text,
+  recording_date timestamp without time zone
+)
+
+
+Создайте запросы, выбирающие:
+
+Все книги определенного автора
+SELECT "id", "title", "author", "pub_year", "price", "recording_date" FROM books WHERE "author" = 'Булгаков М. А.';
+
+Все книги ценой не более 500 рублей
+SELECT "id", "title", "author", "pub_year", "price", "recording_date" FROM "books" WHERE "price"::money::numeric::float8 < 500.00;
+
+Заглавия книг (и год издания) определенного автора, отсортированные по году их издания
+SELECT "title", "pub_year" FROM "books" WHERE "author" = 'Булгаков М. А.' ORDER BY "pub_year";
+
+Имена авторов книг, вышедших в 1990-е годы
+SELECT "author" FROM "books" WHERE "pub_year" BETWEEN 1990 AND 2000;
