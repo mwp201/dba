@@ -1,40 +1,25 @@
-CREATE TABLE `books` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `title` varchar(1024) NOT NULL,
-  `author` varchar(1024) NOT NULL,
-  `pub_year` int(4) NOT NULL,
-  `price` float NOT NULL,
-  `recording_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `publisher` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(1024) NOT NULL,
-  `country` varchar(1024) NOT NULL,
-  `city` varchar(1024) NOT NULL,
-  `recording_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `books` (`title`, `author`, `pub_year`, `price`) VALUES
+('Собачье сердце', 'Булгаков М. А.', 1985, 420),
+('Война и мир', 'Толстой Л. Н.', 1935, 1400),
+('Мертвые души', 'Гоголь Н. В.', 1992, 200),
+('Мастер и Маргарита', 'Булгаков М. А.', 1995, 500),
+('Автостопом по галактике', 'Дуглас Адамс', 2001, 800);
 
-INSERT INTO `books` (`id`, `title`, `author`, `pub_year`, `price`, `recording_date`) VALUES
-(1, 'Собачье сердце', 'Булгаков М. А.', 1985, 420, '2017-03-29 05:43:09'),
-(2, 'Война и мир', 'Толстой Л. Н.', 1935, 1400, '2017-03-29 05:43:09'),
-(3, 'Мертвые души', 'Гоголь Н. В.', 1992, 200, '2017-03-29 05:43:09'),
-(4, 'Мастер и Маргарита', 'Булгаков М. А.', 1995, 500, '2017-03-29 05:43:09');
-
-INSERT INTO `publisher` (`id`, `name`, `country`, `city`, `recording_date`) VALUES
-(1, 'АСТ', 'Россия', 'Москва', '2017-03-29 06:01:34'),
-(2, 'Elsevier', 'Нидерланды', 'Амстердам', '2017-03-29 06:01:34'),
-(3, 'Karger AG', 'Германия', 'Берлин', '2017-03-29 06:01:34'),
-(4, 'Питер', 'Россия', 'Санкт-Петербург', '2017-03-29 06:01:34');
+INSERT INTO `publisher` (`name`, `country`, `city`) VALUES
+('АСТ', 'Россия', 'Москва'),
+('Elsevier', 'Нидерланды', 'Амстердам'),
+('Karger AG', 'Германия', 'Берлин'),
+('Питер', 'Россия', 'Санкт-Петербург');
 
 
 Создайте запросы, выбирающие:
 
 Все книги определенного автора
-SELECT `id`, `title`, `author`, `pub_year`, `price`, `recording_date` FROM `books` WHERE author = 'Булгаков М. А.';
+SELECT `id`, `title`, `author`, `pub_year`, `price` FROM `books` WHERE author = 'Булгаков М. А.';
 
 Все книги ценой не более 500 рублей
-SELECT `id`, `title`, `author`, `pub_year`, `price`, `recording_date` FROM `books` WHERE price < 500;
+SELECT `id`, `title`, `author`, `pub_year`, `price` FROM `books` WHERE price < 500;
 
 Заглавия книг (и год издания) определенного автора, отсортированные по году их издания
 SELECT `title`, `pub_year` FROM `books` WHERE author = 'Булгаков М. А.' ORDER BY pub_year;

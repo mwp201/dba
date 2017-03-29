@@ -1,30 +1,25 @@
-CREATE TABLE public.books
-(
-  id integer NOT NULL DEFAULT nextval('books_id_seq'::regclass),
-  title text,
-  author text,
-  pub_year integer,
-  price money,
-  recording_date timestamp without time zone
-);
 
-CREATE TABLE public.publisher
-(
-  id integer NOT NULL DEFAULT nextval('publisher_id_seq'::regclass),
-  name text,
-  country text,
-  city text,
-  recording_date timestamp without time zone
-)
+INSERT INTO "books" ("title", "author", "pub_year", "price") VALUES
+('Собачье сердце', 'Булгаков М. А.', 1985, 420),
+('Война и мир', 'Толстой Л. Н.', 1935, 1400),
+('Мертвые души', 'Гоголь Н. В.', 1992, 200),
+('Мастер и Маргарита', 'Булгаков М. А.', 1995, 500),
+('Автостопом по галактике', 'Дуглас Адамс', 2001, 800);
+
+INSERT INTO "publisher" ("name", "country", "city") VALUES
+('АСТ', 'Россия', 'Москва'),
+('Elsevier', 'Нидерланды', 'Амстердам'),
+('Karger AG', 'Германия', 'Берлин'),
+('Питер', 'Россия', 'Санкт-Петербург');
 
 
 Создайте запросы, выбирающие:
 
 Все книги определенного автора
-SELECT "id", "title", "author", "pub_year", "price", "recording_date" FROM books WHERE "author" = 'Булгаков М. А.';
+SELECT "id", "title", "author", "pub_year", "price" FROM books WHERE "author" = 'Булгаков М. А.';
 
 Все книги ценой не более 500 рублей
-SELECT "id", "title", "author", "pub_year", "price", "recording_date" FROM "books" WHERE "price"::money::numeric::float8 < 500.00;
+SELECT "id", "title", "author", "pub_year", "price" FROM "books" WHERE "price"::money::numeric::float8 < 500.00;
 
 Заглавия книг (и год издания) определенного автора, отсортированные по году их издания
 SELECT "title", "pub_year" FROM "books" WHERE "author" = 'Булгаков М. А.' ORDER BY "pub_year";
