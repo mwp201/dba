@@ -1,0 +1,15 @@
+Отрицательная цена (ошибок нет)
+INSERT INTO `goods`(`name`, `vendor_code`, `picture`, `price`, `sales_start`, `quantity_in_stock`, `unit`, `shelf_life`)
+VALUES ('Печенье "Юбилейное"', '0-26', 'http://site.ru/img/img-5.png', -195, '2017-02-01', 200, 'кг','2017-08-01');
+
+Количество на складе менее нуля (ошибок нет)
+INSERT INTO `goods`(`name`, `vendor_code`, `picture`, `price`, `sales_start`, `quantity_in_stock`, `unit`, `shelf_life`)
+VALUES ('Печенье "Юбилейное"', '0-26', 'http://site.ru/img/img-5.png', 195, '2017-02-01', -2, 'кг','2017-08-01');
+
+Пустой артикул (ошибок нет)
+INSERT INTO `goods`(`name`, `vendor_code`, `picture`, `price`, `sales_start`, `quantity_in_stock`, `unit`, `shelf_life`)
+VALUES ('Печенье "Юбилейное"', '', 'http://site.ru/img/img-5.png', 195, '2017-02-01', 200, 'кг','2017-08-01');
+
+Некорректная дата (ошибок нет)
+INSERT INTO `goods`(`name`, `vendor_code`, `picture`, `price`, `sales_start`, `quantity_in_stock`, `unit`, `shelf_life`)
+VALUES ('Печенье "Юбилейное"', '', 'http://site.ru/img/img-5.png', 195, '2017-02-01', 200, 'кг','2017-08-321');
