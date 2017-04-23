@@ -1,0 +1,39 @@
+CREATE TABLE `shop`.`goods` (
+ `id` SERIAL NOT NULL AUTO_INCREMENT,
+ `vendor_code` VARCHAR(100) NOT NULL,
+ `name` VARCHAR(1024) NOT NULL,
+ `price` INT(10) NOT NULL,
+ `old_price` INT(10) NULL,
+ `picture` VARCHAR(1024) NOT NULL,
+ `date_receipt_goods` DATE NOT NULL,
+ `quantity_in_stock` INT(6) NOT NULL,
+ PRIMARY KEY (`id`),
+ UNIQUE `uniq` (`vendor_code`)) ENGINE = InnoDB;
+
+//Выбирают 10 самых новых товаров 0.0026 сек.
+SELECT * FROM `goods` WHERE `date_receipt_goods` BETWEEN CURRENT_DATE-7 AND CURRENT_DATE LIMIT 10;
+
+//Выбирают 10 самых дешевых товаров 0.0026 сек.
+SELECT * FROM `goods` WHERE `price` = 1 LIMIT 10;
+
+//Выбирают 10 товаров, цена на которых была максимально снижена (в абсолютном или относительном смысле) 0.0018 сек.
+SELECT * FROM `goods` WHERE ((`old_price`-`price`)/`old_price`)*100 > 95 LIMIT 10
+
+//Выбирают те товары, чей артикул начинается с символов "TEST" (такие товары должны быть в таблице!), используя оператор LIKE 0.0024 сек.
+SELECT * FROM `goods` WHERE `vendor_code` LIKE 'TEST%';
+
+//Затем я добавил в индекс поля `price` и `date_receipt_goods` и повторил запросы
+ALTER TABLE `shop`.`goods` ADD INDEX `price` (`price`);
+ALTER TABLE `shop`.`goods` ADD INDEX `date` (`date_receipt_goods`);
+
+//Выбирают 10 самых новых товаров 0.0012 сек.
+SELECT * FROM `goods` WHERE `date_receipt_goods` BETWEEN CURRENT_DATE-7 AND CURRENT_DATE LIMIT 10;
+
+//Выбирают 10 самых дешевых товаров 0.0013 сек.
+SELECT * FROM `goods` WHERE `price` = 1 LIMIT 10;
+
+//Выбирают 10 товаров, цена на которых была максимально снижена (в абсолютном или относительном смысле) 0.002 сек.
+SELECT * FROM `goods` WHERE ((`old_price`-`price`)/`old_price`)*100 > 95 LIMIT 10
+
+//Выбирают те товары, чей артикул начинается с символов "TEST" (такие товары должны быть в таблице!), используя оператор LIKE 0.0024 сек.
+SELECT * FROM `goods` WHERE `vendor_code` LIKE 'TEST%';

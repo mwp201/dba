@@ -1,0 +1,45 @@
+CREATE TABLE public."goods"
+(
+)
+WITH (
+  OIDS = FALSE
+);
+
+ALTER TABLE public.goods
+ADD COLUMN id serial PRIMARY KEY,
+ADD COLUMN vendor_code character varying(100) NOT NULL UNIQUE,
+ADD COLUMN name character varying(1024) NOT NULL,
+ADD COLUMN price double precision NOT NULL,
+ADD COLUMN old_price double precision NOT NULL,
+ADD COLUMN picture character varying(1024) NOT NULL,
+ADD COLUMN date_receipt_goods date NOT NULL,
+ADD COLUMN quantity_in_stock integer NOT NULL
+
+//Выбирают 10 самых новых товаров 0.014 sec
+SELECT * FROM "goods" WHERE "date_receipt_goods" BETWEEN CURRENT_DATE-7 AND CURRENT_DATE LIMIT 10;
+
+//Выбирают 10 самых дешевых товаров 0.012 sec
+SELECT * FROM "goods" WHERE "price" = 1 LIMIT 10;
+
+//Выбирают 10 товаров, цена на которых была максимально снижена (в абсолютном или относительном смысле) 0.013 sec
+SELECT * FROM "goods" WHERE (("old_price"-"price")/"old_price")*100 > 95 LIMIT 10;
+
+//Выбирают те товары, чей артикул начинается с символов "TEST" (такие товары должны быть в таблице!), используя оператор LIKE 0.024 sec
+SELECT * FROM "goods" WHERE "vendor_code" LIKE 'TEST%';
+
+//Затем я добавил в индекс поля "id", "price" и "date_receipt_goods" и повторил запросы
+CREATE INDEX id ON public.goods (id ASC NULLS LAST);
+CREATE INDEX price ON public.goods (price ASC NULLS LAST);
+CREATE INDEX date ON public.goods (date_receipt_goods ASC NULLS LAST);
+
+//Выбирают 10 самых новых товаров 0.012 sec
+SELECT * FROM "goods" WHERE "date_receipt_goods" BETWEEN CURRENT_DATE-7 AND CURRENT_DATE LIMIT 10;
+
+//Выбирают 10 самых дешевых товаров 0.013 sec
+SELECT * FROM "goods" WHERE "price" = 1 LIMIT 10;
+
+//Выбирают 10 товаров, цена на которых была максимально снижена (в абсолютном или относительном смысле) 0.012 sec
+SELECT * FROM "goods" WHERE (("old_price"-"price")/"old_price")*100 > 95 LIMIT 10;
+
+//Выбирают те товары, чей артикул начинается с символов "TEST" (такие товары должны быть в таблице!), используя оператор LIKE 0.023 sec
+SELECT * FROM "goods" WHERE "vendor_code" LIKE 'TEST%';
