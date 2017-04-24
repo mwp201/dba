@@ -1,0 +1,41 @@
+CREATE TABLE `shop`.`goods` (
+ `id` SERIAL NOT NULL AUTO_INCREMENT,
+ `vendor_code` VARCHAR(100) NOT NULL,
+ `name` VARCHAR(1024) NOT NULL,
+ `price` INT(10) NOT NULL,
+ `old_price` INT(10) NULL,
+ `picture` VARCHAR(1024) NOT NULL,
+ `date_receipt_goods` DATE NOT NULL,
+ `quantity_in_stock` INT(6) NOT NULL,
+ PRIMARY KEY (`id`),
+ UNIQUE `uniq` (`vendor_code`)) ENGINE = InnoDB;
+
+//Создайте таблицу Категорий товаров и таблицу производителей (брендов)
+CREATE TABLE `shop`.`goods_category` ( `id` SERIAL NOT NULL AUTO_INCREMENT , `category` VARCHAR(100) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+INSERT INTO `goods_category`(`category`) VALUES ('food'),('dishes'),('shoes'),('clothes'),('gadget');
+
+CREATE TABLE `shop`.`brand_name` (`id` SERIAL NOT NULL AUTO_INCREMENT , `brand` VARCHAR(1024) NOT NULL ,`category` BIGINT(20) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+INSERT INTO `brand_name`(`brand`, `category`) VALUES ('Белый замок', 1),('Любимый сад',1),('Троекурово',1),('Tescoma',2),('Luminaric',2),('Гусь хрустальный',2),
+('ecco',3),('Ralf Ringer',3), ('КОРФ',3),('zara',4),('Глория',4),('OSTIN',4),('Apple', 5),('A4Tech', 5),('Samsung',5);
+
+//Добавьте в таблицу Товаров поля для связи с Категориями и Брендами
+ALTER TABLE `goods` ADD `category_id` INT NOT NULL AFTER `quantity_in_stock`,
+                    ADD `brand_id` INT NOT NULL AFTER `category_id`;
+
+//Создайте внешние ключи для этих связей
+ALTER TABLE `goods` ADD FOREIGN KEY (`category_id`) REFERENCES `goods_category`(`id`)
+ALTER TABLE `goods` ADD FOREIGN KEY (`brand_id`) REFERENCES `brand_name`(`id`)
+
+
+//Выбрать все товары с указанием их категории и бренда
+SELECT * FROM `goods` LEFT JOIN `goods_category` ON goods.category_id = goods_category.id LEFT JOIN `brand_name` ON goods.brand_id = brand_name.id
+
+//Выбрать все товары, бренд которых начинается на букву "А"
+SELECT * FROM `goods` LEFT JOIN `brand_name` ON goods.brand_id = brand_name.id WHERE brand_name.brand LIKE 'A%'
+
+//Вывести список категорий и число товаров в каждой категории (используйте подзапросы и функцию COUNT(), использовать группировку нельзя)
+SELECT `category`, (SELECT COUNT(`category_id`) FROM `goods` WHERE `goods`.`category_id` = `goods_category`.`id`) AS `count` FROM `goods_category`
+
+//Выбрать для каждой категории список брендов товаров, входящих в нее
+SELECT `category`,(SELECT GROUP_CONCAT(`brand_name`.`brand`) FROM `brand_name` WHERE `brand_name`.`category` = `goods_category`.`id`) AS `brands` FROM `goods_category`
+

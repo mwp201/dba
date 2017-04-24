@@ -1,0 +1,72 @@
+CREATE TABLE public."goods"
+(
+)
+WITH (
+  OIDS = FALSE
+);
+
+ALTER TABLE public.goods
+ADD COLUMN id serial PRIMARY KEY,
+ADD COLUMN vendor_code character varying(100) NOT NULL UNIQUE,
+ADD COLUMN name character varying(1024) NOT NULL,
+ADD COLUMN price double precision NOT NULL,
+ADD COLUMN old_price double precision NOT NULL,
+ADD COLUMN picture character varying(1024) NOT NULL,
+ADD COLUMN date_receipt_goods date NOT NULL,
+ADD COLUMN quantity_in_stock integer NOT NULL
+
+//Создайте таблицу Категорий товаров и таблицу производителей (брендов)
+CREATE TABLE public."goods_category"
+(
+)
+WITH (
+  OIDS = FALSE
+);
+
+ALTER TABLE public.goods_category
+ADD COLUMN id serial PRIMARY KEY,
+ADD COLUMN category character varying(1024) NOT NULL
+
+INSERT INTO "goods_category"("category") VALUES ('food'),('dishes'),('shoes'),('clothes'),('gadget');
+
+CREATE TABLE public."brand_name"
+(
+)
+WITH (
+  OIDS = FALSE
+);
+
+ALTER TABLE public.brand_name
+ADD COLUMN id serial PRIMARY KEY,
+ADD COLUMN brand character varying(1024) NOT NULL,
+ADD COLUMN category integer NOT NULL
+
+
+INSERT INTO "brand_name"("brand", "category") VALUES ('Белый замок', 1),('Любимый сад',1),('Троекурово',1),('Tescoma',2),('Luminaric',2),('Гусь хрустальный',2),
+('ecco',3),('Ralf Ringer',3), ('КОРФ',3),('zara',4),('Глория',4),('OSTIN',4),('Apple', 5),('A4Tech', 5),('Samsung',5);
+
+//Добавьте в таблицу Товаров поля для связи с Категориями и Брендами
+ALTER TABLE public.goods
+ADD COLUMN category_id integer,
+ADD COLUMN brand_id integer;
+
+CREATE INDEX category ON public.goods (category_id ASC NULLS LAST);
+CREATE INDEX brand ON public.goods (brand_id ASC NULLS LAST);
+
+//Создайте внешние ключи для этих связей
+ALTER TABLE "goods" ADD FOREIGN KEY ("category_id") REFERENCES "goods_category"("id");
+ALTER TABLE "goods" ADD FOREIGN KEY ("brand_id") REFERENCES "brand_name"("id");
+
+
+//Выбрать все товары с указанием их категории и бренда
+SELECT * FROM "goods" LEFT JOIN "goods_category" ON goods.category_id = goods_category.id LEFT JOIN "brand_name" ON goods.brand_id = brand_name.id
+
+//Выбрать все товары, бренд которых начинается на букву "А"
+SELECT * FROM "goods" LEFT JOIN "brand_name" ON goods.brand_id = brand_name.id WHERE brand_name.brand LIKE 'A%'
+
+//Вывести список категорий и число товаров в каждой категории (используйте подзапросы и функцию COUNT(), использовать группировку нельзя)
+SELECT "category", (SELECT COUNT("category_id") FROM "goods" WHERE "goods"."category_id" = "goods_category"."id") AS "count" FROM "goods_category"
+
+//Выбрать для каждой категории список брендов товаров, входящих в нее
+SELECT "category",(SELECT STRING_AGG("brand_name"."brand", ',') FROM "brand_name" WHERE "brand_name"."category" = "goods_category"."id") AS "brands"
+ FROM "goods_category"
