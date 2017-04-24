@@ -1,9 +1,8 @@
 <?php
 
 $id = $vendor_code = $name = $price = $old_price = $picture = $date_receipt_goods = $quantity_in_stock = $sql = null;
-$goods = [];
 
-function query($sql, array $data)
+function query(array $data)
 {
     if ($_GET['db_name'] == 'mysql') {
         $dbh = new PDO('mysql:host=localhost;dbname=shop', 'root', 100);
@@ -36,16 +35,9 @@ if (!empty($_GET['submit'])) {
         $picture = 'http://site.ru/pic/pic' . $i . '.png';
         $date_receipt_goods = rand(2000, 2017) . '-' . rand(1, 12) . '-' . rand(1, 31);
         $quantity_in_stock = rand(1, 1500);
-        $goods[] = ['vendor_code' => $vendor_code, 'name' => $name,
-            'price' => $price, 'old_price' => $old_price, 'picture' => $picture,
-            'date_receipt_goods' => $date_receipt_goods, 'quantity_in_stock' => $quantity_in_stock];
-    }
-
-    foreach ($goods as $item) {
-        query($sql, [':vendor_code' => $item['vendor_code'], ':name' => $item['name'],
-            ':price' => $item['price'], ':old_price' => $item['old_price'], ':picture' => $item['picture'],
-            ':date_receipt_goods' => $item['date_receipt_goods'], ':quantity_in_stock' => $item['quantity_in_stock']]);
-
+        query([':vendor_code' => $vendor_code, ':name' => $name,
+            ':price' => $price, ':old_price' => $old_price, ':picture' => $picture,
+            ':date_receipt_goods' => $date_receipt_goods, ':quantity_in_stock' => $quantity_in_stock]);
     }
 }
 ?>

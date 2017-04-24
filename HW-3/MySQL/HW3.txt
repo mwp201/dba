@@ -22,8 +22,9 @@ SELECT * FROM `goods` WHERE ((`old_price`-`price`)/`old_price`)*100 > 95 LIMIT 1
 //Выбирают те товары, чей артикул начинается с символов "TEST" (такие товары должны быть в таблице!), используя оператор LIKE 0.0024 сек.
 SELECT * FROM `goods` WHERE `vendor_code` LIKE 'TEST%';
 
-//Затем я добавил в индекс поля `price` и `date_receipt_goods` и повторил запросы
+//Затем я добавил в индекс поля `price`, `old_price` и `date_receipt_goods` и повторил запросы
 ALTER TABLE `shop`.`goods` ADD INDEX `price` (`price`);
+ALTER TABLE `shop`.`goods` ADD INDEX `old_price` (`old_price`);
 ALTER TABLE `shop`.`goods` ADD INDEX `date` (`date_receipt_goods`);
 
 //Выбирают 10 самых новых товаров 0.0012 сек.
