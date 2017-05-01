@@ -1,0 +1,72 @@
+//Запрос, который выберет категории и среднюю цену товаров в каждой категории, при условии, что эта средняя цена менее 1000 рублей
+SELECT `category`,(SELECT AVG(`goods`.`price`) FROM `goods` WHERE `goods`.`category_id` = `goods_category`.`id`) AS `avg_price`
+FROM `goods_category` WHERE (SELECT AVG(`goods`.`price`) FROM `goods` WHERE `goods`.`category_id` = `goods_category`.`id`) < 1000;
+
+//Улучшите предыдущий запрос таким образом, чтобы в расчет средней цены включались только товары, имеющиеся на складе.
+SELECT `category`,(SELECT AVG(`goods`.`price`) FROM `goods` WHERE `goods`.`category_id` = `goods_category`.`id` AND `goods`.`quantity_in_stock` > 0) AS `avg_price`
+FROM `goods_category` WHERE (SELECT AVG(`goods`.`price`) FROM `goods` WHERE `goods`.`category_id` = `goods_category`.`id`) < 1000;
+
+//Добавьте к таблице брендов класс бренда (A, B, C).
+ALTER TABLE `brand_name` ADD `brand_class` VARCHAR (100) NOT NULL AFTER `brand`;
+UPDATE `brand_name` SET `brand_class`= 'A' WHERE `id` = 1;
+UPDATE `brand_name` SET `brand_class`= 'B' WHERE `id` = 2;
+UPDATE `brand_name` SET `brand_class`= 'C' WHERE `id` = 3;
+UPDATE `brand_name` SET `brand_class`= 'A' WHERE `id` = 4;
+UPDATE `brand_name` SET `brand_class`= 'B' WHERE `id` = 5;
+UPDATE `brand_name` SET `brand_class`= 'C' WHERE `id` = 6;
+UPDATE `brand_name` SET `brand_class`= 'A' WHERE `id` = 7;
+UPDATE `brand_name` SET `brand_class`= 'B' WHERE `id` = 8;
+UPDATE `brand_name` SET `brand_class`= 'C' WHERE `id` = 9;
+UPDATE `brand_name` SET `brand_class`= 'A' WHERE `id` = 10;
+UPDATE `brand_name` SET `brand_class`= 'B' WHERE `id` = 11;
+UPDATE `brand_name` SET `brand_class`= 'C' WHERE `id` = 12;
+UPDATE `brand_name` SET `brand_class`= 'A' WHERE `id` = 13;
+UPDATE `brand_name` SET `brand_class`= 'B' WHERE `id` = 14;
+UPDATE `brand_name` SET `brand_class`= 'C' WHERE `id` = 15;
+
+//Напишите запрос, который для каждой категории и класса брендов, представленных в категории выберет среднюю цену товаров.
+SELECT `brand_name`.`brand_class` AS `class`, `goods_category`.`category`,
+(SELECT AVG(`goods`.`price`) FROM `goods` WHERE `goods`.`brand_id` = `brand_name`.`id`) AS `avg_price`
+FROM `goods`,`brand_name`,`goods_category` WHERE `goods`.`brand_id` = `brand_name`.`id`
+AND `goods`.`category_id` = `goods_category`.`id` GROUP BY `avg_price` ORDER BY `brand_name`.`brand_class`
+
+//Добавьте к своей базе данных таблицу заказов.
+CREATE TABLE `shop`.`orders` (
+ `id` SERIAL NOT NULL AUTO_INCREMENT,
+ `order_id` INT (100) NOT NULL,
+ `goods_id` VARCHAR(1024) NOT NULL,
+ `order_date` DATETIME NOT NULL,
+ PRIMARY KEY (`id`)
+ ) ENGINE = InnoDB;
+
+//добавил колонку для связи с таблицей заказов
+ALTER TABLE `goods` ADD `order_id` INT(100) NOT NULL AFTER `brand_id`;
+
+//добавил индексы
+ALTER TABLE `shop`.`orders` ADD INDEX `order_id` (`order_id`);
+ALTER TABLE `shop`.`orders` ADD INDEX `order_date` (`order_date`);
+
+//добавил внешний ключ
+ALTER TABLE `goods` ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`)
+
+//запрос, который выведет таблицу с полями "дата", "число заказов за дату", "сумма заказов за дату".
+SELECT DATE(`orders`.`order_date`) AS `date`,
+COUNT(`orders`.`goods_id`) AS `n_orders`,
+IFNULL(SUM(`goods`.`price`),0) AS `total_price`
+FROM `orders`,`goods` WHERE `goods`.`order_id` = `orders`.`order_id`
+AND DATE(`orders`.`order_date`) < CURRENT_DATE GROUP BY `date`
+
+//Улучшите этот запрос, введя группировку по признаку "дешевый товар", "средняя цена", "дорогой товар"
+SELECT DATE(`orders`.`order_date`) AS `date`,
+(CASE
+     WHEN `goods`.`price` <= 300 THEN 'inexpensive'
+     WHEN `goods`.`price` >= 700 THEN 'expensive'
+     ELSE 'avg_price'
+ END) AS `sort`,
+ COUNT(`orders`.`goods_id`) AS `n_orders`,
+ IFNULL(SUM(`goods`.`price`),0) AS `total_price`
+ FROM `orders`,`goods`
+ WHERE `goods`.`order_id` = `orders`.`order_id`
+ AND DATE(`orders`.`order_date`) < CURRENT_DATE
+ GROUP BY `date`,`sort`
+
