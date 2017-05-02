@@ -1,0 +1,72 @@
+//Создайте таблицу "История изменений товаров"
+CREATE TABLE `shop`.`history` (
+`id` SERIAL NOT NULL AUTO_INCREMENT,
+`goods_id` VARCHAR(1024) NOT NULL,
+`event` ENUM('create','price','delete') NOT NULL,
+`old_price` INT(10) NULL DEFAULT NULL,
+`new_price` INT(10) NOT NULL,
+`event_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ PRIMARY KEY (`id`))
+ ENGINE = InnoDB;
+
+//Создайте триггеры на таблицу товаров, которые будут при создании товара, изменении его цены или удалении
+// заполнять таблицу из пункта 2.
+
+//Вставляем данные в таблицу history после вставки новых данных в таблицу товаров
+DELIMITER $$
+CREATE TRIGGER `insert_create`
+AFTER INSERT ON `goods`
+FOR EACH ROW
+BEGIN
+    INSERT INTO `history` (`goods_id`, `event`, `old_price`, `new_price`, `event_date`)
+    VALUES (NEW.`name`, 'create', NEW.`old_price`, NEW.`price`, CURRENT_TIMESTAMP);
+END;
+$$
+DELIMITER ;
+
+//Обновляем данные в таблице history перед обновлением цены товара в таблице товаров
+DELIMITER $$
+CREATE TRIGGER `update_price`
+BEFORE UPDATE ON `goods`
+FOR EACH ROW
+BEGIN
+  SET NEW.old_price = OLD.price;
+  UPDATE `history` SET `event` = 'price', `old_price` = OLD.`price`,
+  `new_price` = NEW.`price`, `event_date` = CURRENT_TIMESTAMP
+  WHERE `goods_id` = OLD.`name`;
+END;
+$$
+DELIMITER ;
+
+//Помечаем товар как удаленный в таблице history перед удалением товара из таблицы товаров
+DELIMITER $$
+CREATE TRIGGER `delete`
+BEFORE DELETE ON `goods`
+FOR EACH ROW
+BEGIN
+   UPDATE `history` SET `event` = 'delete', `event_date` = CURRENT_TIMESTAMP
+   WHERE `goods_id` = OLD.`name`;
+END;
+$$
+DELIMITER ;
+
+//Создайте функцию "размер скидки", которая по ID товара будет вычислять - сколько составило последнее изменение цены на него
+//в процентах, используя запрос к таблице из пункта 2. Примените эту функцию в запросе на выборку товаров.
+DELIMITER $$
+CREATE FUNCTION calcDiscount(new_price INT UNSIGNED, old_price INT UNSIGNED)
+RETURNS TEXT
+BEGIN
+  DECLARE discount FLOAT;
+  SET discount = ((new_price/old_price)-1)*100;
+  IF (discount < 0) THEN
+     SET discount = discount * (-1);
+     RETURN CONCAT ('Цена снижена на ', discount, '%');
+  ELSE
+     RETURN CONCAT ('Цена повышена на ', discount, '%');
+  END IF;
+END
+$$
+DELIMITER ;
+
+SELECT `new_price`, `old_price`, calcDiscount(`new_price`, `old_price`) AS `discount`, `event_date`
+FROM `history` WHERE `event` = 'price' AND `goods_id` = 'Tovar-1005'
