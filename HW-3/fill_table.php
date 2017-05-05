@@ -33,8 +33,8 @@ if (!empty($_GET['submit'])) {
         $old_price = rand(1, 1000);
         $price = rand(1, $old_price);
         $picture = 'http://site.ru/pic/pic' . $i . '.png';
-        $date_receipt_goods = rand(2000, 2017) . '-' . rand(1, 12) . '-' . rand(1, 31);
-        $quantity_in_stock = rand(1, 1500);
+        $date_receipt_goods = rand(2010, 2017) . '-' . rand(1, 12) . '-' . rand(1, 31);
+        $quantity_in_stock = rand(1, 1000);
         query([':vendor_code' => $vendor_code, ':name' => $name,
             ':price' => $price, ':old_price' => $old_price, ':picture' => $picture,
             ':date_receipt_goods' => $date_receipt_goods, ':quantity_in_stock' => $quantity_in_stock]);
