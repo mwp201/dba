@@ -17,7 +17,7 @@ SELECT * FROM `goods` ORDER BY `date_receipt_goods` DESC LIMIT 10;
 SELECT * FROM `goods` ORDER BY `price` LIMIT 10;
 
 //Выбирают 10 товаров, цена на которых была максимально снижена (в абсолютном или относительном смысле) 0.0013 сек.
-SELECT (`old_price` - `price`) AS `discount` FROM `goods` ORDER BY `discount` DESC LIMIT 10;
+SELECT *, (`old_price` - `price`) AS `discount` FROM `goods` ORDER BY `discount` DESC LIMIT 10;
 
 //Выбирают те товары, чей артикул начинается с символов "TEST" (такие товары должны быть в таблице!), используя оператор LIKE 0.0024 сек.
 SELECT * FROM `goods` WHERE `vendor_code` LIKE 'TEST%';
@@ -30,11 +30,11 @@ ALTER TABLE `shop`.`goods` ADD INDEX `date` (`date_receipt_goods`);
 //Выбирают 10 самых новых товаров 0.0012 сек.
 SELECT * FROM `goods` ORDER BY `date_receipt_goods` DESC LIMIT 10;
 
-//Выбирают 10 самых дешевых товаров 0.0013 сек
+//Выбирают 10 самых дешевых товаров 0.0013 сек.
 SELECT * FROM `goods` ORDER BY `price` LIMIT 10;
 
-//Выбирают 10 товаров, цена на которых была максимально снижена (в абсолютном или относительном смысле) 0.002 сек
-SELECT (`old_price` - `price`) AS `discount` FROM `goods` ORDER BY `discount` DESC LIMIT 10;
+//Выбирают 10 товаров, цена на которых была максимально снижена (в абсолютном или относительном смысле) 0.002 сек.
+SELECT *, (`old_price` - `price`) AS `discount` FROM `goods` ORDER BY `discount` DESC LIMIT 10;
 
 //Выбирают те товары, чей артикул начинается с символов "TEST" (такие товары должны быть в таблице!), используя оператор LIKE 0.0024 сек.
 SELECT * FROM `goods` WHERE `vendor_code` LIKE 'TEST%';
