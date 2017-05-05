@@ -1,10 +1,12 @@
 //Запрос, который выберет категории и среднюю цену товаров в каждой категории, при условии, что эта средняя цена менее 1000 рублей
-SELECT "category",(SELECT AVG("goods"."price") FROM "goods" WHERE "goods"."category_id" = "goods_category"."id") AS "avg_price"
-FROM "goods_category" WHERE (SELECT AVG("goods"."price") FROM "goods" WHERE "goods"."category_id" = "goods_category"."id") < 1000;
+SELECT "category", AVG("goods"."price") AS "avg_price" FROM "goods_category"
+INNER JOIN "goods" ON "goods"."category_id" = "goods_category"."id"
+GROUP BY "goods_category"."id" HAVING AVG("goods"."price") < 1000;
 
 //Улучшите предыдущий запрос таким образом, чтобы в расчет средней цены включались только товары, имеющиеся на складе.
-SELECT "category",(SELECT AVG("goods"."price") FROM "goods" WHERE "goods"."category_id" = "goods_category"."id" AND "goods"."quantity_in_stock" > 0) AS "avg_price"
-FROM "goods_category" WHERE (SELECT AVG("goods"."price") FROM "goods" WHERE "goods"."category_id" = "goods_category"."id") < 1000;
+SELECT "category", AVG("goods"."price") AS "avg_price" FROM "goods_category"
+INNER JOIN "goods" ON "goods"."category_id" = "goods_category"."id" AND "goods"."quantity_in_stock" > 0
+GROUP BY "goods_category"."id" HAVING AVG("goods"."price") < 1000;
 
 //Добавьте к таблице брендов класс бренда (A, B, C)
 ALTER TABLE "public"."brand_name" ADD COLUMN "brand_class" character varying(100);

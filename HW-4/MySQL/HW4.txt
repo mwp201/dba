@@ -37,5 +37,6 @@ SELECT * FROM `goods` LEFT JOIN `brand_name` ON goods.brand_id = brand_name.id W
 SELECT `category`, (SELECT COUNT(`category_id`) FROM `goods` WHERE `goods`.`category_id` = `goods_category`.`id`) AS `count` FROM `goods_category`
 
 //Выбрать для каждой категории список брендов товаров, входящих в нее
-SELECT `category`,(SELECT GROUP_CONCAT(`brand_name`.`brand`) FROM `brand_name` WHERE `brand_name`.`category` = `goods_category`.`id`) AS `brands` FROM `goods_category`
+SELECT `category`,(SELECT GROUP_CONCAT(`brand_name`.`brand`) FROM `brand_name` WHERE `brand_name`.`category` = `goods_category`.`id`) AS `brands`
+ FROM `goods_category`
 
