@@ -1,0 +1,33 @@
+1.
+//Установите ограничения на цены товаров
+ALTER TABLE "public"."goods" ADD CONSTRAINT check_price CHECK ("price" > 0);
+ALTER TABLE "public"."goods" ADD CONSTRAINT check_old_price CHECK ("old_price" > 0);
+
+//Установите ограничения на артикулы
+ALTER TABLE "public"."goods" ADD CONSTRAINT check_vendor_code CHECK (char_length("vendor_code") <= 15);
+
+//Установите ограничения на поле "есть на складе"
+ALTER TABLE "public"."goods" ADD CONSTRAINT check_qnt CHECK ("quantity_in_stock" >= 0);
+
+2.
+//Придумайте еще не менее двух ограничений в других таблицах будущего интернет-магазина и реализуйте их
+//Установим ограничения на номер заказа
+ALTER TABLE "public"."orders" ADD CONSTRAINT check_order CHECK ("order_id" > 0);
+
+//Классам брендов можно присвоить только символы А, В или С
+ALTER TABLE "public"."brand_name" ADD CONSTRAINT check_brand_class
+CHECK (("brand_class" = 'A') OR ("brand_class" = 'B') OR ("brand_class" = 'C'));
+
+3.
+//Перепроектируйте таблицу товаров, используя поле categories bigint[] и напишите запросы:
+ALTER TABLE "goods" ADD COLUMN "categories" bigint[];
+
+//Выбирающий все товары из заданной категории (в данном запросе из категории 1)
+SELECT * FROM "goods" WHERE 1 = ANY("goods"."categories");
+
+//Выбирающий все категории и количество товаров в каждой из них
+SELECT unnest("categories") AS "goods_cat", COUNT("name") FROM "goods" GROUP BY "goods_cat" ORDER BY "goods_cat"
+
+//Добавляющий определенный товар в определенную категорию (вам придется найти нужную функцию для работы с массивами)
+UPDATE "goods" SET "categories" = array_append("categories"::int[], 15) WHERE "name" = 'Tovar-1001'
+
