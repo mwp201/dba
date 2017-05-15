@@ -1,0 +1,38 @@
+1.
+//Создайте в товарах поле типа jsonb для хранения различных характеристик товара.
+//Например цвет (color), размер (size), вес (weight).
+//Заполните это поле различными характеристиками в виде json.
+
+ALTER TABLE "goods" ADD COLUMN "product_details" jsonb;
+
+//С помощью скрипта заполнил таблицу значениями
+UPDATE "goods" SET "product_details" = ('{"color": "red", "size": "L", "weight": 150}') WHERE "goods"."id" = 1;
+
+2.
+//Найдите товары:
+//У которых есть характеристика цвет, но нет размера
+SELECT * FROM "goods" WHERE "product_details"::jsonb ->> 'color' != 'null' AND "product_details"::jsonb ->> 'size' = 'null';
+
+//У которых вес не более килограмма
+SELECT * FROM "goods" WHERE ("product_details"::jsonb -> 'weight') < '1000';
+
+//Красного цвета и размера XXL
+SELECT * FROM "goods" WHERE "product_details" @> '{"color": "red", "size": "XXL"}'::jsonb;
+
+3.
+//Создайте материализированное представление, которое поля jsonb превратит в столбцы (color, size, weight)
+
+CREATE MATERIALIZED VIEW "goods_json" AS
+SELECT "name", "product_details" ->> 'color' AS "color",
+                "product_details" ->> 'size' AS "size",
+                "product_details" ->> 'weight' AS "weight"
+FROM "goods";
+
+4.
+// Используя оконные функции напишите запрос, который вернет все товары и для каждого - его долю в процентах
+//в общей стоимости товаров такого же цвета (разумеется, речь про цену * количество).
+
+SELECT "name", "product_details" ->> 'color' AS "color", "price", "quantity_in_stock",
+sum("price" * "quantity_in_stock") OVER(PARTITION BY "product_details" ->> 'color') AS "total",
+(100.0 * ("price" * "quantity_in_stock") / sum("price" * "quantity_in_stock") OVER(PARTITION BY "product_details" ->> 'color')) AS "percent"
+FROM "goods" GROUP BY "name", "product_details", "price" ,"quantity_in_stock";
